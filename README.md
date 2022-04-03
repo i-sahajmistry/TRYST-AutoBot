@@ -24,7 +24,8 @@ pip install -r requirements.txt
 > Since the size of model files are very large (>200MB) it was not possible to push it on github hence we kept those files on google drive.
 
 
-
+![Image 1](![image](https://user-images.githubusercontent.com/75440657/161442731-ace5fc0f-527d-4244-ab4f-5a120bdeea0d.png)
+).
 
 
 
