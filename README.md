@@ -23,12 +23,13 @@ pip install -r requirements.txt
 #### Please manually download our Model files of type *.pth from [google drive](https://drive.google.com/drive/folders/11R1dtkgiS13rvqz99jDr5cWBxbvjurrT?usp=sharing) and keep those in root of this repository, where the main.ipynb file is present.
 > Since the size of model files are very large (>200MB) it was not possible to push it on github hence we kept those files on google drive.
 
-5. Move the downloaded files to the folder containing main.ipynb
+5 - Move the downloaded files to the folder containing main.ipynb
 
-6. Run the code
-
+6 - Run the code
 
 <img src="./images/person.png" height="256">
 <img src="./images/animal.png" height="256">
 <img src="./images/roadcone.png" height="256">
 <img src="./images/zebra.png" height="256">
+
+For the moment, we have only performed the detection of person, animal, roadcone and zebra crossing. We have oly initialized the jetson class instance but not given instructions to run, wait or stop. Detection can be seen in the above mentioned images.
