@@ -7,9 +7,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
+from jetbot import Robot
 from tensorflow import convert_to_tensor, expand_dims, uint8
 from torchsummary import summary
-
 
 warnings.filterwarnings('ignore')
 
@@ -123,7 +123,7 @@ def getProbability(image, detectors):
     return prob
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  
 
     # cap = cv2.VideoCapture('test.mp4')
     cap = cv2.VideoCapture(0)
