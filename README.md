@@ -13,6 +13,7 @@ git clone https://github.com/i-sahajmistry/Robo-Sapiens-AutoBot.git
 2 - Create a virtual environment and activate it.
 ```
 python3 -m venv envName
+source ./envName/bin/activate
 ```
 3 - Run command to install dependencies.
 ```
