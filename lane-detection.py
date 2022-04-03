@@ -1,17 +1,22 @@
+import warnings
+
 import cv2
+import matplotlib.pylab as plt
+import numpy as np
 import torch
 import torch.nn as nn
-from tensorflow import expand_dims, convert_to_tensor, uint8
-import numpy as np
-import matplotlib.pylab as plt
-import torchvision.models as models
 import torch.nn.functional as F
-import warnings
+import torchvision.models as models
+from tensorflow import convert_to_tensor, expand_dims, uint8
+from torchsummary import summary
+
+
 warnings.filterwarnings('ignore')
 
 
 def get_model(path):
     model = models.alexnet(pretrained=True)
+
     model.classifier = nn.Sequential(
             nn.Dropout(p=0.5),
             nn.Linear(256 * 6 * 6, 4096),
@@ -21,6 +26,7 @@ def get_model(path):
             nn.ReLU(inplace=True),
             nn.Linear(4096, 2)
         )
+
     model.load_state_dict(torch.load(path))
     return model
 
@@ -76,6 +82,7 @@ def process(image):
 def getProbability(image, detectors):
     prob = []
     for detector in detectors:
+        # torch.nn.functional.interpolate(image, size=()
         output = detector(image)
         p = F.softmax(output)
         prob.append(p[0])
@@ -84,7 +91,8 @@ def getProbability(image, detectors):
 
 if __name__ == '__main__':
 
-    cap = cv2.VideoCapture('test.mp4')
+    # cap = cv2.VideoCapture('test.mp4')
+    cap = cv2.VideoCapture(0)
 
     width = 224
     height = 224
@@ -100,14 +108,20 @@ if __name__ == '__main__':
 
         img = cv2.resize(frame, (width , height ))
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        rgb_tensor = convert_to_tensor(rgb, dtype=uint8)
-        rgb_tensor = expand_dims(rgb_tensor , 0)
+        rgb_tensor = torch.Tensor(rgb)
+        rgb_tensor = torch.permute(rgb_tensor,(2,0,1))
+        # rgb_tensor = convert_to_tensor(rgb, dtype=uint8)                      # commented now hgfs
+        # rgb_tensor = expand_dims(rgb_tensor , 0)
 
+        # print("=>", rgb_tensor)
+        # print("=>", detectors)
         pred = getProbability(rgb_tensor, detectors)
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        frame = cv2.putText(frame, f'Zebra Crossing: {pred[3]:.2f}', (20, 20), font, 
-                   1, (255, 255, 255), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'A {pred[0]:.2f}', (20, 20), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'B {pred[1]:.2f}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'C: {pred[2]:.2f}', (20, 80), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'D: {pred[3]:.2f}', (20, 110), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
         
         frame = process(frame)
         cv2.imshow('frame', frame)
