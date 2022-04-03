@@ -23,9 +23,14 @@ pip install -r requirements.txt
 #### Please manually download our Model files of type *.pth from [google drive](https://drive.google.com/drive/folders/11R1dtkgiS13rvqz99jDr5cWBxbvjurrT?usp=sharing) and keep those in root of this repository, where the main.ipynb file is present.
 > Since the size of model files are very large (>200MB) it was not possible to push it on github hence we kept those files on google drive.
 
+5. Move the downloaded files to the folder containing main.ipynb
 
-![Image 1](![image](https://user-images.githubusercontent.com/75440657/161442731-ace5fc0f-527d-4244-ab4f-5a120bdeea0d.png)
-).
+6. Run the code
 
+![Image 1](![image](images/person.jpg))
 
+![Image 2](![image](images/animal.jpg))
 
+![Image 3](![image](images/roadcones.jpg))
+
+![Image 4](![image](images/zebra.jpg))
