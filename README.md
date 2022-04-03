@@ -27,18 +27,23 @@ pip install -r requirements.txt
 
 6 - Run the code
 <br/><br/>
+<br/><br/>
 
 <img src="./images/person.png" height="256">
 Person Detected
 <br/><br/>
+<br/><br/>
 <img src="./images/animal.png" height="256">
 Animal Detected
+<br/><br/>
 <br/><br/>
 <img src="./images/roadcone.png" height="256">
 Road Cone detected
 <br/><br/>
+<br/><br/>
 <img src="./images/zebra.png" height="256">
 Zebra Crossing Detected
+<br/><br/>
 <br/><br/>
 
 We have used our trained model for detecting the above objects. We have also initialized the Robot class instance and given instructions to the Jetbot according to the video feed.
