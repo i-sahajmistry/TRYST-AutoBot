@@ -6,17 +6,114 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 import torchvision.models as models
 from jetbot import Robot
+# from torchvision.models.alexnet import alexnet
+import Alexnet
 from tensorflow import convert_to_tensor, expand_dims, uint8
 from torchsummary import summary
+from math import atan2, degrees
+
 
 warnings.filterwarnings('ignore')
 robot = Robot()
 
+def getAngle(location, destination, laut_jao):
+    
+    tX, tY = destination
+    center = location[4]
+    g, b = location[1], location[2]
+    cxg, cyg = g
+    cxb, cyb = b
+    cx, cy = cxb, cyb
+    dx, dy = g[0] - b[0], g[1] - b[1]
 
-def get_model_2(path):
-    model = models.alexnet(pretrained=True)
+    if cxg >= cxb and cyg <= cyb:
+        rads = atan2(dy, dx)
+        intHeadingDeg = degrees(rads)
+        intHeadingDeg = intHeadingDeg - 90
+
+    elif cxg >= cxb and cyg >= cyb:
+        rads = atan2(dx, dy)
+        intHeadingDeg = degrees(rads)
+        intHeadingDeg = (intHeadingDeg * -1)
+
+    elif cxg <= cxb and cyg >= cyb:
+        rads = atan2(dx, -dy)
+        intHeadingDeg = degrees(rads)
+        intHeadingDeg = intHeadingDeg + 180
+
+    elif cxg <= cxb and cyg <= cyb:
+        rads = atan2(dx, -dy)
+        intHeadingDeg = degrees(rads) + 180
+
+    if intHeadingDeg > 180:
+        intHeadingDeg = intHeadingDeg-360
+    
+    if intHeadingDeg > 0:
+        intHeading = intHeadingDeg - 180
+    else:
+        intHeading = intHeadingDeg + 180
+
+    dx = center[0] - tX
+    dy = center[1] - tY
+
+    if tX >= center[0] and tY <= center[1]:
+        rads = atan2( dy, dx)
+        degs = degrees(rads)
+        degs = degs - 90
+
+    elif tX >= center[0] and tY >= center[1]:
+        rads = atan2(dx, dy)
+        degs = degrees(rads)
+        degs = (degs * -1)
+
+    elif tX <= center[0] and tY >= center[1]:
+        rads = atan2(dx, -dy)
+        degs = degrees(rads)
+        degs = degs + 180
+
+    elif tX <= center[0] and tY <= center[1]:
+        rads = atan2(dx, -dy)
+        degs = degrees(rads) + 180
+
+    if tX >= center[0] and tY <= center[1]:
+        rads = atan2( dy, dx)
+        degs = degrees(rads)
+        degs = degs - 90
+
+    elif tX >= center[0] and tY >= center[1]:
+        rads = atan2(dx, dy)
+        degs = degrees(rads)
+        degs = (degs * -1)
+
+    elif tX <= center[0] and tY >= center[1]:
+        rads = atan2(dx, -dy)
+        degs = degrees(rads)
+        degs = degs + 180
+
+    elif tX <= center[0] and tY <= center[1]:
+        rads = atan2(dx, -dy)
+        degs = degrees(rads) + 180
+
+    if degs > 180:
+        degs = degs-360
+
+    shortestAngle = degs - intHeadingDeg
+    if shortestAngle > 180:
+        shortestAngle -= 360
+    elif shortestAngle < -180:
+        shortestAngle += 360
+
+    return [shortestAngle, intHeading]
+
+
+warnings.filterwarnings('ignore')
+
+
+def get_model(path, out):
+    model = Alexnet.alexnet(pretrained=True)
 
     model.classifier = nn.Sequential(
             nn.Dropout(p=0.5),
@@ -25,23 +122,7 @@ def get_model_2(path):
             nn.Dropout(p=0.5),
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
-            nn.Linear(4096, 2)
-        )
-
-    model.load_state_dict(torch.load(path))
-    return model
-
-def get_model_3(path):
-    model = models.alexnet(pretrained=True)
-
-    model.classifier = nn.Sequential(
-            nn.Dropout(p=0.5),
-            nn.Linear(256 * 6 * 6, 4096),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.5),
-            nn.Linear(4096, 4096),
-            nn.ReLU(inplace=True),
-            nn.Linear(4096, 3)
+            nn.Linear(4096, out)
         )
 
     model.load_state_dict(torch.load(path))
@@ -123,11 +204,12 @@ if __name__ == '__main__':
     height = 224
 
     # path = ["./person.pth", "./animal.pth", "./roadCones.pth", "./zebra.pth"]
-    path = ["./72.4(Alexnet).pth", "./zebra.pth"]
+    path = ["./72.4(Alexnet).pth", "./stop_and_traffic(65.7).pth","./zebra.pth"]
     detectors = []
 
-    detectors.append(get_model_3(path[0]))
-    detectors.append(get_model_2(path[1]))
+    detectors.append(get_model(path[0], 3))
+    detectors.append(get_model(path[1], 4))
+    detectors.append(get_model(path[2], 2))
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -144,9 +226,7 @@ if __name__ == '__main__':
         pred = getProbability(rgb_tensor, detectors)
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        # frame = cv2.putText(frame, f'A {pred[0]:.2f}', (20, 20), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
-        # frame = cv2.putText(frame, f'B {pred[1]:.2f}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
-        # frame = cv2.putText(frame, f'C: {pred[2]:.2f}', (20, 80), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+
         frame = cv2.putText(frame, f'D: {pred[0]}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
         frame = cv2.putText(frame, f'D: {pred[1]:.2f}', (20, 110), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
         
