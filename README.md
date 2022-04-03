@@ -27,10 +27,8 @@ pip install -r requirements.txt
 
 6. Run the code
 
-![Image 1](./images/person.jpg)
 
-![Image 2](./images/animal.jpg)
-
-![Image 3](./images/roadcone.jpg)
-
-![Image 4](./images/zebra.jpg)
+<img src="./images/person.png" height="256">
+<img src="./images/animal.png" height="256">
+<img src="./images/roadcone.png" height="256">
+<img src="./images/zebra.png" height="256">
