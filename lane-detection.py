@@ -14,7 +14,7 @@ from torchsummary import summary
 warnings.filterwarnings('ignore')
 
 
-def get_model(path):
+def get_model_2(path):
     model = models.alexnet(pretrained=True)
 
     model.classifier = nn.Sequential(
@@ -25,6 +25,22 @@ def get_model(path):
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Linear(4096, 2)
+        )
+
+    model.load_state_dict(torch.load(path))
+    return model
+
+def get_model_3(path):
+    model = models.alexnet(pretrained=True)
+
+    model.classifier = nn.Sequential(
+            nn.Dropout(p=0.5),
+            nn.Linear(256 * 6 * 6, 4096),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.5),
+            nn.Linear(4096, 4096),
+            nn.ReLU(inplace=True),
+            nn.Linear(4096, 3)
         )
 
     model.load_state_dict(torch.load(path))
@@ -79,13 +95,31 @@ def process(image):
     return image_with_lines
 
 
+# def getProbability(image, detectors):
+#     prob = []
+#     for detector in detectors:
+#         # torch.nn.functional.interpolate(image, size=()
+#         output = detector(image)
+#         p = F.softmax(output)
+#         prob.append(p[0])
+#     return prob
+
+
 def getProbability(image, detectors):
     prob = []
-    for detector in detectors:
-        # torch.nn.functional.interpolate(image, size=()
-        output = detector(image)
-        p = F.softmax(output)
-        prob.append(p[0])
+    
+    output = detectors[0](image)
+    p = np.argmax(F.softmax(output).detach().numpy())
+    if(p == 0):
+        prob.append('person')
+    elif(p == 1):
+        prob.append('animal')
+    else:
+        prob.append('roadCones')
+
+    output = detectors[1](image)
+    p = F.softmax(output)
+    prob.append(p[0])
     return prob
 
 
@@ -97,11 +131,12 @@ if __name__ == '__main__':
     width = 224
     height = 224
 
-    path = ["./person.pth", "./animal.pth", "./roadCones.pth", "./zebra.pth"]
+    # path = ["./person.pth", "./animal.pth", "./roadCones.pth", "./zebra.pth"]
+    path = ["./72.4(Alexnet).pth", "./zebra.pth"]
     detectors = []
 
-    for p in path:
-        detectors.append(get_model(p))
+    detectors.append(get_model_3(path[0]))
+    detectors.append(get_model_2(path[1]))
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -118,10 +153,11 @@ if __name__ == '__main__':
         pred = getProbability(rgb_tensor, detectors)
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        frame = cv2.putText(frame, f'A {pred[0]:.2f}', (20, 20), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
-        frame = cv2.putText(frame, f'B {pred[1]:.2f}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
-        frame = cv2.putText(frame, f'C: {pred[2]:.2f}', (20, 80), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
-        frame = cv2.putText(frame, f'D: {pred[3]:.2f}', (20, 110), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        # frame = cv2.putText(frame, f'A {pred[0]:.2f}', (20, 20), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        # frame = cv2.putText(frame, f'B {pred[1]:.2f}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        # frame = cv2.putText(frame, f'C: {pred[2]:.2f}', (20, 80), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'D: {pred[0]}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'D: {pred[1]:.2f}', (20, 110), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
         
         frame = process(frame)
         cv2.imshow('frame', frame)
