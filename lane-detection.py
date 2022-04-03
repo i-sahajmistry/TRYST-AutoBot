@@ -7,11 +7,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
+from jetbot import Robot
 from tensorflow import convert_to_tensor, expand_dims, uint8
 from torchsummary import summary
 
-
 warnings.filterwarnings('ignore')
+robot = Robot()
 
 
 def get_model_2(path):
@@ -95,16 +96,6 @@ def process(image):
     return image_with_lines
 
 
-# def getProbability(image, detectors):
-#     prob = []
-#     for detector in detectors:
-#         # torch.nn.functional.interpolate(image, size=()
-#         output = detector(image)
-#         p = F.softmax(output)
-#         prob.append(p[0])
-#     return prob
-
-
 def getProbability(image, detectors):
     prob = []
     
@@ -123,7 +114,7 @@ def getProbability(image, detectors):
     return prob
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  
 
     # cap = cv2.VideoCapture('test.mp4')
     cap = cv2.VideoCapture(0)
