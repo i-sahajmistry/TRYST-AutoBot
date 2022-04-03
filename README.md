@@ -28,8 +28,13 @@ pip install -r requirements.txt
 6 - Run the code
 
 <img src="./images/person.png" height="256">
+Person Detected
 <img src="./images/animal.png" height="256">
+Animal Detected
 <img src="./images/roadcone.png" height="256">
+Road Cone detected
 <img src="./images/zebra.png" height="256">
+Zebra Crossing Detected
 
-For the moment, we have only performed the detection of person, animal, roadcone and zebra crossing. We have oly initialized the jetson class instance but not given instructions to run, wait or stop. Detection can be seen in the above mentioned images.
+We have used our trained model for detecting the above objects. We have also initialized the Robot class instance and given instructions to the Jetbot according to the video feed.
+Fine tuning of the parameters for will be possible only after having the JetBot hardware .
