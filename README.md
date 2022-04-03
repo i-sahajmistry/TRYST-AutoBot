@@ -19,7 +19,7 @@ python3 -m venv envName
 pip install -r requirements.txt
 ```
 4 - Download Model files.
-#### Please manually download our Model files of type *.pth from [google drive](https://drive.google.com/drive/folders/11R1dtkgiS13rvqz99jDr5cWBxbvjurrT?usp=sharing) and keep those in root of this repo. i.e where main.ipynb file is present.
+#### Please manually download our Model files of type *.pth from [google drive](https://drive.google.com/drive/folders/11R1dtkgiS13rvqz99jDr5cWBxbvjurrT?usp=sharing) and keep those in root of this repository, where the main.ipynb file is present.
 > Since the size of model files are very large (>200MB) it was not possible to push it on github hence we kept those files on google drive.
 
 
