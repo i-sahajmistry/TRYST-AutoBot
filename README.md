@@ -27,10 +27,10 @@ pip install -r requirements.txt
 
 6. Run the code
 
-![Image 1](![image](./images/person.jpg))
+![Image 1](./images/person.jpg)
 
-![Image 2](![image](./images/animal.jpg))
+![Image 2](./images/animal.jpg)
 
-![Image 3](![image](./images/roadcone.jpg))
+![Image 3](./images/roadcone.jpg)
 
-![Image 4](![image](./images/zebra.jpg))
+![Image 4](./images/zebra.jpg)
