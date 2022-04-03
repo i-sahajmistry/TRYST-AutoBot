@@ -10,6 +10,7 @@ import torch.nn.functional as F
 import torchvision.models as models
 from jetbot import Robot
 # from torchvision.models.alexnet import alexnet
+
 import Alexnet
 from tensorflow import convert_to_tensor, expand_dims, uint8
 from torchsummary import summary
@@ -130,7 +131,6 @@ def get_model(path, out):
 
 def region_of_interest(img, vertices):
     mask = np.zeros_like(img)
-    #channel_count = img.shape[2]
     match_mask_color = 255
     cv2.fillPoly(mask, vertices, match_mask_color)
     masked_image = cv2.bitwise_and(img, mask)
@@ -180,16 +180,35 @@ def process(image):
 def getProbability(image, detectors):
     prob = []
     
-    output = detectors[0](image)
-    p = np.argmax(F.softmax(output).detach().numpy())
-    if(p == 0):
-        prob.append('person')
-    elif(p == 1):
-        prob.append('animal')
-    else:
-        prob.append('roadCones')
+    output = F.softmax(detectors[0](image))
+    if max(output) > 0.7:
 
-    output = detectors[1](image)
+        p = np.argmax(output.detach().numpy())
+        if(p == 0):
+            prob.append('person')
+        elif(p == 1):
+            prob.append('animal')
+        else:
+            prob.append('roadCones')
+    else:
+        prob.append('Nothing')
+
+    output = F.softmax(detectors[1](image))
+    if max(output) > 0.7:
+
+        p = np.argmax(output.detach().numpy())
+        if(p == 0):
+            prob.append('Stop')
+        elif(p == 1):
+            prob.append('Trafic Light - Blue')
+        elif(p == 1):
+            prob.append('Trafic Light - Red')
+        else:
+            prob.append('Trafic Light - Green')
+    else:
+        prob.append('Nothing')
+
+    output = detectors[2](image)
     p = F.softmax(output)
     prob.append(p[0])
     return prob
@@ -197,13 +216,11 @@ def getProbability(image, detectors):
 
 if __name__ == '__main__':  
 
-    # cap = cv2.VideoCapture('test.mp4')
     cap = cv2.VideoCapture(0)
 
     width = 224
     height = 224
 
-    # path = ["./person.pth", "./animal.pth", "./roadCones.pth", "./zebra.pth"]
     path = ["./72.4(Alexnet).pth", "./stop_and_traffic(65.7).pth","./zebra.pth"]
     detectors = []
 
@@ -218,17 +235,15 @@ if __name__ == '__main__':
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         rgb_tensor = torch.Tensor(rgb)
         rgb_tensor = torch.permute(rgb_tensor,(2,0,1))
-        # rgb_tensor = convert_to_tensor(rgb, dtype=uint8)                      # commented now hgfs
-        # rgb_tensor = expand_dims(rgb_tensor , 0)
-
-        # print("=>", rgb_tensor)
-        # print("=>", detectors)
         pred = getProbability(rgb_tensor, detectors)
 
         font = cv2.FONT_HERSHEY_SIMPLEX
 
-        frame = cv2.putText(frame, f'D: {pred[0]}', (20, 50), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
-        frame = cv2.putText(frame, f'D: {pred[1]:.2f}', (20, 110), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        print(len(pred))
+
+        frame = cv2.putText(frame, f'D: {pred[0]}', (20, 20), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'D: {pred[1]}', (20, 60), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'D: {pred[2]:.3f}', (20, 110), font, 1, (25, 25, 25), 2, cv2.LINE_AA)
         
         frame = process(frame)
         cv2.imshow('frame', frame)
