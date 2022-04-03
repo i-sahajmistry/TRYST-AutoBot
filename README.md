@@ -46,5 +46,5 @@ Zebra Crossing Detected
 <br/><br/>
 <br/><br/>
 
-We have used our trained model for detecting the above objects. We have also initialized the Robot class instance and given instructions to the Jetbot according to the video feed.
+We have used our trained model for detecting the above objects. We have also initialized the Robot class instance and given instructions to the Jetbot, for moving, according to the video feed.
 Fine tuning of the parameters for will be possible only after having the JetBot hardware .
