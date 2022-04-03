@@ -12,6 +12,7 @@ from tensorflow import convert_to_tensor, expand_dims, uint8
 from torchsummary import summary
 
 warnings.filterwarnings('ignore')
+robot = Robot()
 
 
 def get_model_2(path):
@@ -93,16 +94,6 @@ def process(image):
                             maxLineGap=100)
     image_with_lines = drow_the_lines(image, lines)
     return image_with_lines
-
-
-# def getProbability(image, detectors):
-#     prob = []
-#     for detector in detectors:
-#         # torch.nn.functional.interpolate(image, size=()
-#         output = detector(image)
-#         p = F.softmax(output)
-#         prob.append(p[0])
-#     return prob
 
 
 def getProbability(image, detectors):
