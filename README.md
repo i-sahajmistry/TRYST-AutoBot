@@ -31,6 +31,6 @@ pip install -r requirements.txt
 
 ![Image 2](![image](images/animal.jpg))
 
-![Image 3](![image](images/roadcones.jpg))
+![Image 3](![image](images/roadcone.jpg))
 
 ![Image 4](![image](images/zebra.jpg))
