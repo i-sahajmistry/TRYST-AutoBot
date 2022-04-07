@@ -240,7 +240,7 @@ cap = cv2.VideoCapture('test.mp4')
 width = 500
 height = 500
 
-path = ["./72.4(Alexnet).pth", "./stop_and_traffic(65.7).pth","./zebra.pth"]
+path = ["./PAC.pth", "./ST.pth","./zebra.pth"]
 detectors = []
 
 detectors.append(get_model(path[0], 3))
